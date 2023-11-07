@@ -4,11 +4,11 @@ from django.db.models import QuerySet
 from rest_framework import generics, viewsets, mixins
 from rest_framework.viewsets import GenericViewSet
 
-from user.models import User, Profile
+from user.models import User, Profile, Hashtag, Post
 from user.serializers import (
     UserSerializer,
     ProfileSerializer,
-    ProfileListSerializer
+    ProfileListSerializer, HashtagSerializer, PostSerializer, PostRetrieveSerializer
 )
 
 
@@ -65,3 +65,22 @@ class CreateProfileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer) -> None:
         serializer.save(user=self.request.user)
+
+
+class HashtagView(generics.ListCreateAPIView):
+    serializer_class = HashtagSerializer
+    queryset = Hashtag.objects.all()
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    serializer_class = PostSerializer
+    queryset = Post.objects.prefetch_related("hashtags")
+
+    def perform_create(self, serializer) -> None:
+        serializer.save(user=self.request.user)
+
+    def get_serializer_class(self) -> Type:
+        if self.action == "retrieve":
+            return PostRetrieveSerializer
+
+        return PostSerializer

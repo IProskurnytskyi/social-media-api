@@ -98,3 +98,31 @@ class Profile(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Hashtag(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+
+def image_file_path(instance, filename) -> str:
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.text[:12])}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/posts_images/", filename)
+
+
+class Post(models.Model):
+    text = models.TextField()
+    hashtags = models.ManyToManyField(Hashtag, related_name="posts")
+    image = models.ImageField(null=True, blank=True, upload_to=image_file_path)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="posts"
+    )
+
+    def __str__(self) -> str:
+        return self.text
