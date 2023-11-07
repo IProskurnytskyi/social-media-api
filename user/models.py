@@ -68,7 +68,8 @@ class Profile(models.Model):
         MAN = "m", "Man"
         WOMAN = "w", "Woman"
 
-    username = models.CharField(max_length=256)
+    username = models.CharField(max_length=256, unique=True)
+    email = models.EmailField(unique=True, default="user@user.com")
     first_name = models.CharField(max_length=128, null=True, blank=True)
     last_name = models.CharField(max_length=128, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)

@@ -37,6 +37,24 @@ class ProfileView(
 
         return ProfileSerializer
 
+    def get_queryset(self) -> QuerySet:
+        user_id = self.request.query_params.get("id")
+        username = self.request.query_params.get("username")
+        email = self.request.query_params.get("email")
+
+        queryset = self.queryset
+
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        if username:
+            queryset = queryset.filter(username__icontains=username)
+
+        if email:
+            queryset = queryset.filter(email__icontains=email)
+
+        return queryset
+
 
 class CreateProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer

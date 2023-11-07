@@ -32,6 +32,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "username",
+            "email",
             "first_name",
             "last_name",
             "full_name",
@@ -51,6 +52,7 @@ class ProfileListSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "username",
+            "email",
             "created_at",
             "picture"
         )
