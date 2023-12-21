@@ -2,11 +2,12 @@ from typing import Type
 
 from django.contrib.auth import logout
 from django.db.models import QuerySet
-from rest_framework import generics, viewsets, status, mixins
+from rest_framework import generics, viewsets, status, mixins, permissions
 from rest_framework.decorators import api_view, action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from user import permission
 from user.models import User, Hashtag, Post, Follow
 from user.serializers import (
     CreateUserSerializer,
@@ -84,6 +85,7 @@ class HashtagView(generics.ListCreateAPIView):
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.prefetch_related("hashtags").select_related("user")
+    permission_classes = [permissions.IsAuthenticated, permission.IsOwnerOrReadOnly]
 
     def perform_create(self, serializer) -> None:
         serializer.save(user=self.request.user)
