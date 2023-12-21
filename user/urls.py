@@ -20,7 +20,8 @@ user_list = UserViewSet.as_view({
 
 user_detail = UserViewSet.as_view({
     "get": "retrieve",
-    "put": "update"
+    "put": "update",
+    "delete": "destroy"
 })
 
 following_users = UserViewSet.as_view({
