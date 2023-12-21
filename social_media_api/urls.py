@@ -17,7 +17,11 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from drf_spectacular.views import SpectacularSwaggerView, SpectacularAPIView, SpectacularRedocView
+from drf_spectacular.views import (
+    SpectacularSwaggerView,
+    SpectacularAPIView,
+    SpectacularRedocView
+)
 
 from social_media_api import settings
 

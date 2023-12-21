@@ -45,7 +45,9 @@ class UserViewSet(
     def get_following_users(self, request, pk=None) -> Response:
         user = self.get_object()
         following_objects = user.followings.all()
-        following_ids = [following_object.id for following_object in following_objects]
+        following_ids = [
+            following_object.id for following_object in following_objects
+        ]
         following_users = User.objects.filter(id__in=following_ids)
 
         serializer = UserListSerializer(following_users, many=True)
@@ -109,7 +111,9 @@ class HashtagView(generics.ListCreateAPIView):
 class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     queryset = Post.objects.prefetch_related("hashtags").select_related("user")
-    permission_classes = [permissions.IsAuthenticated, permission.IsOwnerOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticated, permission.IsOwnerOrReadOnly
+    ]
 
     def perform_create(self, serializer) -> None:
         serializer.save(user=self.request.user)
@@ -117,7 +121,9 @@ class PostViewSet(viewsets.ModelViewSet):
     def get_object(self) -> Post:
         user = self.request.user
         following_objects = user.followings.all()
-        following_ids = [following_object.id for following_object in following_objects]
+        following_ids = [
+            following_object.id for following_object in following_objects
+        ]
         following_ids.append(user.id)
         posts = Post.objects.filter(user_id__in=following_ids)
         specific_post = posts.filter(pk=self.kwargs["pk"]).first()
