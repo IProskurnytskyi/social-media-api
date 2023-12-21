@@ -46,6 +46,13 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
 
+def profile_picture_file_path(instance, filename) -> str:
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.username)}-{uuid.uuid4()}{extension}"
+
+    return os.path.join("uploads/profile_pictures/", filename)
+
+
 class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
@@ -55,21 +62,10 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-
-def profile_picture_file_path(instance, filename) -> str:
-    _, extension = os.path.splitext(filename)
-    filename = f"{slugify(instance.username)}-{uuid.uuid4()}{extension}"
-
-    return os.path.join("uploads/profile_pictures/", filename)
-
-
-class Profile(models.Model):
     class GenderChoices(models.TextChoices):
         MAN = "m", "Man"
         WOMAN = "w", "Woman"
 
-    username = models.CharField(max_length=256, unique=True)
-    email = models.EmailField(unique=True, default="user@user.com")
     first_name = models.CharField(max_length=128, null=True, blank=True)
     last_name = models.CharField(max_length=128, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
@@ -83,21 +79,20 @@ class Profile(models.Model):
     picture = models.ImageField(
         null=True, blank=True, upload_to=profile_picture_file_path
     )
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="profiles"
-    )
 
     @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
     def __str__(self) -> str:
-        return f"{self.first_name} {self.last_name}"
+        return self.full_name
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Follow(models.Model):
+    users = models.ManyToManyField(User, related_name="followings")
 
 
 class Hashtag(models.Model):

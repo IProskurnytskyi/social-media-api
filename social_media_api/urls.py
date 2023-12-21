@@ -22,5 +22,5 @@ from social_media_api import settings
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/user/", include("user.urls", namespace="user")),
+    path("api/users/", include("user.urls", namespace="user")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
