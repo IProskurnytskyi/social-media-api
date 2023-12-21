@@ -1,7 +1,9 @@
-from typing import Type
+from typing import Type, Any
 
 from django.contrib.auth import logout
 from django.db.models import QuerySet
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import generics, viewsets, status, mixins, permissions
 from rest_framework.decorators import api_view, action
 from rest_framework.request import Request
@@ -76,6 +78,28 @@ class UserViewSet(
 
         return queryset
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "id",
+                type=OpenApiTypes.INT,
+                description="Filter by user_id (ex. ?id=1)",
+            ),
+            OpenApiParameter(
+                "first_name",
+                type=OpenApiTypes.STR,
+                description="Filter by first_name (ex. ?first_name=bob)",
+            ),
+            OpenApiParameter(
+                "last_name",
+                type=OpenApiTypes.STR,
+                description="Filter by last_name (ex. ?last_name=ross)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs) -> Response:
+        return super().list(request, *args, **kwargs)
+
 
 class HashtagView(generics.ListCreateAPIView):
     serializer_class = HashtagSerializer
@@ -115,6 +139,18 @@ class PostViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(hashtags__id__in=ids)
 
         return queryset.distinct()
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "ids",
+                type=Any,
+                description="Filter by hashtag_ids (ex. ?ids=1,2,3,4,5)",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs) -> Response:
+        return super().list(request, *args, **kwargs)
 
 
 @api_view(["GET"])
