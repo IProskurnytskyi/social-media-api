@@ -18,6 +18,11 @@ pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 python manage.py runserver
+if you want to run periodic tasks run these commands in separate terminals
+and login into admin panel to crete periodic task:
+brew services start redis
+celery -A social_media_api worker -l INFO
+celery -A social_media_api beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
 
 ## Getting access
